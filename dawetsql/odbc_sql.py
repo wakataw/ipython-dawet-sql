@@ -94,10 +94,10 @@ class OdbcSqlMagics(Magics):
                 return
 
         if args.download:
-            if valid_name.endswith('.csv'):
+            if valid_name.lower().endswith('.csv'):
                 self.to_csv(cell, valid_name)
                 return
-            elif valid_name.endswith('.pkl'):
+            elif valid_name.lower().endswith('.pkl'):
                 self.to_pickle(cell, valid_name)
                 return
             else:
