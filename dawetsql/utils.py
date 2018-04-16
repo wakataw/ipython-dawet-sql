@@ -1,7 +1,7 @@
 import re
 
 cleanser = re.compile(r'\s+|"|\'')
-alphanum = re.compile(r'[a-zA-Z0-9]')
+alphanum = re.compile(r'[a-zA-Z0-9_]')
 alphanum_name = lambda x: ''.join(alphanum.findall(x))
 
 def validate_name(varname):
