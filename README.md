@@ -5,14 +5,14 @@ Run SQL directly from Jupyter Notebook cell using ODBC without SQLAlchemy
 ## Installation
 
 ```bash
-$ pip3 install -e git+https://gitlab.com/wakataw/ipython-odbc-sql.git#egg=ipython_odbc_sql
+$ pip3 install -e git+https://gitlab.com/wakataw/ipython-dawet-sql.git#egg=ipython_dawet_sql --user
 ```
 
 ## Usage
 
 ### Load Extention
 ```
-%load_ext odbc_sql
+%load_ext dawetsql
 ```
 
 ### Database Connection
@@ -23,6 +23,15 @@ $ pip3 install -e git+https://gitlab.com/wakataw/ipython-odbc-sql.git#egg=ipytho
 ```
 
 This is optional, you can pass parameter from `%%dawetsql` cell magic while executing query.
+
+#### Set Chunk Size
+
+By default, `dawetsql` set chunk size to 500 rows. You can change it by passing `-c` or `--chunksize` arguments
+
+```
+%dawetsql -c 100 dsn
+```
+
 
 #### Close Connection
 
@@ -38,7 +47,8 @@ SELECT * FROM tables
 WHERE somecolumn = 'somevalue'
 ```
 
-Query Results is presented using pandas dataframe with default limit 10 rows.
+Query Results Preview is presented using pandas dataframe with default limit 10 rows.
+You can access preview dataframe within notebook by calling `_` variable.
 
 ### Cell Magic Advance Usage
 
@@ -53,7 +63,7 @@ WHERE somecolumn = 'somevalue'
 #### Store Query Result to Variable
 
 ```
-%%dawetsql --name=result_df
+%%dawetsql --ouput variablename --download
 SELECT * FROM tables
 WHERE somecolumn = 'somevalue'
 ```
@@ -61,7 +71,15 @@ WHERE somecolumn = 'somevalue'
 #### Export Query Result to CSV
 
 ```
-%%dawetsql --name=csvfilename.csv --resultformat=csv
+%%dawetsql --output filename.csv --download
+SELECT * FROM tables
+WHERE somecolumn = 'somevalue'
+```
+
+#### Export Query Result to Pickle
+
+```
+%%dawetsql --output picklename.pkl --download
 SELECT * FROM tables
 WHERE somecolumn = 'somevalue'
 ```
