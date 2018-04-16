@@ -1,14 +1,14 @@
 from setuptools import setup
 
 setup(
-    name='ipython-odbc-sql',
+    name='ipython-dawet-sql',
     version='0.0.1',
-    packages=['odbc_sql'],
-    url='https://gitlab.com/wakataw/ipython-odbc-sql',
+    packages=['dawetsql'],
+    url='https://gitlab.com/wakataw/ipython-dawet-sql',
     license='MIT',
     author='Agung Pratama',
     author_email='me@agungpratama.id',
-    description='Ipython ODBC SQL Magic',
+    description='Ipython ODBC SQL Magic for Dawet',
     install_requires=[
         'pandas',
         'pyodbc',

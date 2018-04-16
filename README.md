@@ -5,7 +5,7 @@ Run SQL directly from Jupyter Notebook cell using ODBC without SQLAlchemy
 ## Installation
 
 ```bash
-$ pip3 install -e git+https://gitlab.com/wakataw/ipython-odbc-sql.git
+$ pip3 install -e git+https://gitlab.com/wakataw/ipython-odbc-sql.git#egg=ipython_odbc_sql
 ```
 
 ## Usage
