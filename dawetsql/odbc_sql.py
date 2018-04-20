@@ -108,7 +108,6 @@ class OdbcSqlMagics(Magics):
         return self.to_dataframe("SELECT * FROM ({}) T LIMIT {}".format(cell, args.limit), valid_name)
 
     def download(self, query):
-        print("Fetching result")
         return read_sql(query, self.conn, chunksize=self.chunksize)
 
     @staticmethod
@@ -122,6 +121,7 @@ class OdbcSqlMagics(Magics):
         :param query: SQL Query
         :return: pandas dataframe
         """
+        print("Fetching result", flush=True)
         result = self.download(query)
         total = 0
         df_list = []
