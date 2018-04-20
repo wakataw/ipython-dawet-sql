@@ -1,5 +1,6 @@
 import logging
 import pyodbc
+import sys
 
 from pandas import DataFrame, read_sql, concat
 from IPython.core import magic_arguments
@@ -112,7 +113,8 @@ class OdbcSqlMagics(Magics):
 
     @staticmethod
     def print_process(total):
-        print("Total {} row(s) downloaded".format(total), end='\r')
+        sys.stdout.write("\rTotal {} row(s) downloaded".format(total))
+        sys.stdout.flush()
 
     def get_dataframe(self, query):
         """
@@ -130,7 +132,7 @@ class OdbcSqlMagics(Magics):
             self.print_process(total)
 
         if df_list:
-            df = concat(df_list)
+            df = concat(df_list, ignore_index=True)
             return df
 
         return DataFrame()
