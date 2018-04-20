@@ -8,6 +8,13 @@ Run SQL directly from Jupyter Notebook cell using ODBC without SQLAlchemy
 $ pip3 install -e git+https://gitlab.com/wakataw/ipython-dawet-sql.git#egg=ipython_dawet_sql --user
 ```
 
+### Installation with spesific tag
+```bash
+$ pip3 install https://gitlab.com/wakataw/ipython-dawet-sql/-/archive/<tag>/ipython-dawet-sql-<tag>.zip
+```
+
+You can find available tags [here](https://gitlab.com/wakataw/ipython-dawet-sql/tags)
+
 ## Usage
 
 ### Load Extention
