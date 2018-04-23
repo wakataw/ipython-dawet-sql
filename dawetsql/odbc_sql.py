@@ -146,11 +146,13 @@ class OdbcSqlMagics(Magics):
         """
         result = self.download(query)
         total = 0
+        header = True
 
         for chunk in result:
-            chunk.to_csv(filename, index=False, mode='a')
+            chunk.to_csv(filename, index=False, mode='a', header=header)
             total += len(chunk)
             self.print_process(total)
+            header = False
 
     def to_dataframe(self, query, varname, download=False):
         """
