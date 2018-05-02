@@ -2,7 +2,7 @@ from setuptools import setup
 
 setup(
     name='ipython-dawet-sql',
-    version='0.0.1.dev2',
+    version='0.0.1.dev3',
     packages=['dawetsql'],
     url='https://gitlab.com/wakataw/ipython-dawet-sql',
     license='MIT',
@@ -11,7 +11,7 @@ setup(
     description='Ipython ODBC SQL Magic for Dawet',
     install_requires=[
         'pandas',
-        'pyodbc',
+        'pypyodbc',
         'ipython'
     ]
 )

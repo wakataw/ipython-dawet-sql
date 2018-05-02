@@ -1,5 +1,5 @@
 import logging
-import pyodbc
+import pypyodbc
 import sys
 
 from pandas import DataFrame, read_sql, concat
@@ -23,7 +23,7 @@ class OdbcSqlMagics(Magics):
         :return:
         """
         try:
-            self.conn = pyodbc.connect("DSN={}".format(dsn))
+            self.conn = pypyodbc.connect("DSN={}".format(dsn))
             if self.conn:
                 print("Connected to {}".format(dsn))
         except Exception as e:
