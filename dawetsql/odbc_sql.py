@@ -105,7 +105,7 @@ class OdbcSqlMagics(Magics):
                 self.to_dataframe(cell, valid_name, download=True)
                 return
 
-        return self.to_dataframe("SELECT * FROM ({}) T LIMIT {}".format(cell, args.limit), valid_name)
+        return self.to_dataframe(utils.limit_query(cell, args.limit), valid_name)
 
     def download(self, query):
         return read_sql(query, self.conn, chunksize=self.chunksize)

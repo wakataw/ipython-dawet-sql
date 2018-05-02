@@ -3,6 +3,7 @@ import re
 cleanser = re.compile(r'\s+|"|\'')
 alphanum = re.compile(r'[a-zA-Z0-9_]')
 alphanum_name = lambda x: ''.join(alphanum.findall(x))
+query_pattern = re.compile(r'(.*)LIMIT\s+\d+$', flags=re.DOTALL|re.I)
 
 def validate_name(varname):
     valid_name = cleanser.sub('', varname)
@@ -23,3 +24,11 @@ def validate_name(varname):
             return True, valid_name
         else:
             return False, varname
+
+def limit_query(query, limit):
+    is_limited = query_pattern.findall(query)
+
+    if is_limited:
+        query = is_limited[0]
+
+    return query.strip() + '\nLIMIT {}'.format(limit)
