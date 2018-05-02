@@ -69,7 +69,6 @@ class OdbcSqlMagics(Magics):
     @magic_arguments.argument('-l', '--limit', type=int, default=10, help="Set result limit")
     @magic_arguments.argument('-x', '--dsn', type=str, help="ODBC DSN")
     @magic_arguments.argument('-o', '--ouput', default='_', type=str, help="File or Variable name for results data")
-    @magic_arguments.argument('-d', '--download', action='store_true', help="Download query result")
     def odbc_sql(self, arg, cell=None):
         """
         Run SQL Query
@@ -94,7 +93,7 @@ class OdbcSqlMagics(Magics):
                     "Please open connection first using %dawetsql line magic or pass -x parameter followed by odbc dsn")
                 return
 
-        if args.download:
+        if valid_name != '_':
             if valid_name.lower().endswith('.csv'):
                 self.to_csv(cell, valid_name)
                 return
