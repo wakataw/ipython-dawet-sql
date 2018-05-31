@@ -178,11 +178,12 @@ class OdbcSqlMagics(Magics):
         df.to_pickle(pickle_name)
 
     @line_magic('explorer')
-    def explore_schema(self):
+    def explore_schema(self, *args):
         '''
         Display schema explorer widgets
         :return:
         '''
+        print('Fetching schema detail..')
         return SchemaExplorer(self)
 
     def __del__(self):

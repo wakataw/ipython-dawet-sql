@@ -3,17 +3,17 @@ from ipywidgets import Textarea, Layout, Button, HBox, VBox, Output, Dropdown, L
 
 class SchemaExplorer(object):
     __query = '''SELECT 
+    position,
     schemaname,
     tablename,
     name,
     javaclass
 FROM columns
 WHERE vdbname = 'DJPOLAP2'
-GROUP BY 
+ORDER BY
     schemaname,
     tablename,
-    name,
-    javaclass'''
+    position'''
 
     def __init__(self, dawetsql):
         self.__odbc = dawetsql
@@ -47,7 +47,7 @@ GROUP BY
 
     def query_builder(self, schema, table, columns):
         query = "SELECT \n{}".format(',\n'.join([col for col in columns]))[:-1]
-        query += "\nFROM {}.{}".format(schema, table)
+        query += "\nFROM \n    {}.{}".format(schema, table)
         return query
 
     def on_detiltable_click(self, arg):
