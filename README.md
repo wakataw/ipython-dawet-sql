@@ -4,16 +4,17 @@ Run SQL directly from Jupyter Notebook cell using ODBC without SQLAlchemy
 
 ## Installation
 
+### Latest Development
 ```bash
-$ pip3 install -e git+https://gitlab.com/wakataw/ipython-dawet-sql.git#egg=ipython_dawet_sql --user
+$ pip3 install https://gitlab.com/wakataw/ipython-dawet-sql/-/archive/master/ipython-dawet-sql-master.zip --user
 ```
 
-### Installation with spesific tag
+### Spesific Tag
 ```bash
 $ pip3 install https://gitlab.com/wakataw/ipython-dawet-sql/-/archive/<tag>/ipython-dawet-sql-<tag>.zip
 ```
 
-You can find available tags [here](https://gitlab.com/wakataw/ipython-dawet-sql/tags)
+You can find available tag [here](https://gitlab.com/wakataw/ipython-dawet-sql/tags)
 
 ## Usage
 
@@ -70,7 +71,7 @@ WHERE somecolumn = 'somevalue'
 #### Store Query Result to Variable
 
 ```
-%%dawetsql --ouput variablename --download
+%%dawetsql --ouput variablename
 SELECT * FROM tables
 WHERE somecolumn = 'somevalue'
 ```
@@ -78,7 +79,7 @@ WHERE somecolumn = 'somevalue'
 #### Export Query Result to CSV
 
 ```
-%%dawetsql --output filename.csv --download
+%%dawetsql --output filename.csv
 SELECT * FROM tables
 WHERE somecolumn = 'somevalue'
 ```
@@ -86,10 +87,34 @@ WHERE somecolumn = 'somevalue'
 #### Export Query Result to Pickle
 
 ```
-%%dawetsql --output picklename.pkl --download
+%%dawetsql --output picklename.pkl
 SELECT * FROM tables
 WHERE somecolumn = 'somevalue'
 ```
+
+### Widgets
+
+#### Schema Explorer Widget
+
+Widget that help you explore database schema, table, columns name and type.
+
+```
+%explorer [-f --force]
+```
+
+> Table Detail
+
+
+![table detail](img/widget01.png)
+
+> Query Builder
+
+
+![query builder](img/widget02.png)
+
+### Settings
+
+You can find **ipython-dawet-sql** settings file in `~/.dawetsql/settings.ini`. Currently, it is used only to store database schema query string.
 
 ## Legal
 
