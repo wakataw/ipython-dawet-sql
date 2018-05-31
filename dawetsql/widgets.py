@@ -56,6 +56,7 @@ class SchemaExplorer(object):
             self.__schemas = pandas.read_pickle(pickle_path)
 
             if not self.__schemas.empty:
+                print('Schema is loaded from cache, use %explorer -f or --force to get as fresh as daisy schema')
                 return self.__schemas
 
         with self.__out:

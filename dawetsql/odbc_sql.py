@@ -189,9 +189,6 @@ class OdbcSqlMagics(Magics):
 
         print('Fetching schema detail..')
 
-        if not args.force:
-            print('Loading schema from cache')
-
         explorer = SchemaExplorer(self)
         explorer.show(force=args.force)
 
