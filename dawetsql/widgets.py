@@ -130,8 +130,3 @@ class WidgetSettings(object):
     @property
     def schema_query(self):
         return self.__settings['QUERY']['SchemaQuery']
-
-if __name__ == '__main__':
-    e = SchemaExplorer('anu')
-    s = WidgetSettings()
-    print(s.schema_query)
