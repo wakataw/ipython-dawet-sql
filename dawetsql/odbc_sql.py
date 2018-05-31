@@ -178,14 +178,22 @@ class OdbcSqlMagics(Magics):
         df.to_pickle(pickle_name)
 
     @line_magic('explorer')
-    def explore_schema(self, *args):
+    @magic_arguments.magic_arguments()
+    @magic_arguments.argument('-f', '--force', action='store_true', help="Force explorer to re-index schema")
+    def explore_schema(self, arg):
         '''
         Display schema explorer widgets
         :return:
         '''
+        args = magic_arguments.parse_argstring(self.explore_schema, arg)
+
         print('Fetching schema detail..')
+
+        if not args.force:
+            print('Loading schema from cache')
+
         explorer = SchemaExplorer(self)
-        explorer.show()
+        explorer.show(force=args.force)
 
     def __del__(self):
         if self.conn:
