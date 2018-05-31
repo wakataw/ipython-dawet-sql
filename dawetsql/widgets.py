@@ -9,7 +9,7 @@ class SchemaExplorer(object):
         Initialize SchemaExplorer
         :param dawetsql: OdbcSqlMagics object
         '''
-        self.__odbc = dawetsql
+        self.dawetsql = dawetsql
         self.out = Output()
         self.box = VBox()
         self.get_schemas()
@@ -47,9 +47,7 @@ class SchemaExplorer(object):
             position'''
 
         with self.out:
-            self.__odbc.odbc_connect('djpolap2')
-            self.schemas = self.__odbc.get_dataframe(query)
-            self.__odbc.odbc_disconnect()
+            self.schemas = self.dawetsql.get_dataframe(query)
 
     def on_schema_change(self, change):
         '''
