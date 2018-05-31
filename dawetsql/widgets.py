@@ -46,7 +46,7 @@ ORDER BY
             (self.dbschema.schemaname == change['new'])].tablename.unique().tolist()
 
     def query_builder(self, schema, table, columns):
-        query = "SELECT \n{}".format(',\n'.join([col for col in columns]))[:-1]
+        query = "SELECT \n{}".format(',\n'.join(['    {}'.format(col) for col in columns]))[:-1]
         query += "\nFROM \n    {}.{}".format(schema, table)
         return query
 
