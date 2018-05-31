@@ -10,10 +10,15 @@ class SchemaExplorer(object):
         :param dawetsql: OdbcSqlMagics object
         '''
         self.dawetsql = dawetsql
+
+    def show(self):
+        '''
+        Display schema explorer widgets
+        :return:
+        '''
         self.out = Output()
         self.box = VBox()
-        self.get_schemas()
-        self.schema_list = Dropdown(options=['Choose Schema'] + self.schemas.schemaname.unique().tolist())
+        self.schema_list = Dropdown(options=['Choose Schema'] + self.get_schemas().schemaname.unique().tolist())
         self.table_list = Dropdown()
         self.table_detail = Button(description='Table Detail', button_style='success')
         self.query_area = Textarea(
@@ -46,8 +51,12 @@ class SchemaExplorer(object):
             tablename,
             position'''
 
+        # TODO: cache schema dataframe
+
         with self.out:
             self.schemas = self.dawetsql.get_dataframe(query)
+
+        return self.schemas
 
     def on_schema_change(self, change):
         '''

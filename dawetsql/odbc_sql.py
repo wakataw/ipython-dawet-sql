@@ -184,7 +184,8 @@ class OdbcSqlMagics(Magics):
         :return:
         '''
         print('Fetching schema detail..')
-        return SchemaExplorer(self)
+        explorer = SchemaExplorer(self)
+        explorer.show()
 
     def __del__(self):
         if self.conn:
