@@ -72,8 +72,10 @@ class SchemaExplorer(object):
         :param change: dropdown update
         :return:
         """
-        self.__table_list.options = ['Choose Table'] + self.__schemas[
-            (self.__schemas.schemaname == change['new'])].tablename.unique().tolist()
+        self.__table_list.options = ['Choose Table'] + \
+                                    self.__schemas[
+                                        (self.__schemas.schemaname == change['new'])
+                                    ].tablename.unique().tolist()
 
     def __on_button_click(self, type):
         """
@@ -83,8 +85,8 @@ class SchemaExplorer(object):
         """
         self.__out.clear_output()
 
-        detail = self.__schemas[(self.__schemas.schemaname == self.__schema_list.value) & (
-                self.__schemas.tablename == self.__table_list.value)].reset_index(drop=True)
+        detail = self.__schemas[(self.__schemas.schemaname == self.__schema_list.value) & 
+                                (self.__schemas.tablename == self.__table_list.value)].reset_index(drop=True)
 
         if detail.empty:
             return
