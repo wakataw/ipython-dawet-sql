@@ -5,6 +5,8 @@ import sys
 from pandas import DataFrame, read_sql, concat
 from IPython.core import magic_arguments
 from IPython.core.magic import magics_class, Magics, line_magic, cell_magic
+
+from dawetsql.widgets import SchemaExplorer
 from . import utils
 
 
@@ -29,6 +31,14 @@ class OdbcSqlMagics(Magics):
         except Exception as e:
             logging.error(e)
             return
+
+    @line_magic('explorer')
+    def show_widget(self):
+        """
+        Display schema explorer widgets
+        :return:
+        """
+        return SchemaExplorer(self)
 
     @line_magic('dawetsql')
     @magic_arguments.magic_arguments()
