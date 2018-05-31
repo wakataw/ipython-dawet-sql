@@ -14,10 +14,10 @@ class SchemaExplorer(object):
         Initialize SchemaExplorer
         :param dawetsql: OdbcSqlMagics object
         """
+        WIDGET_PATH.mkdir(exist_ok=True)
+
         self.__dawetsql = dawetsql
         self.__settings = WidgetSettings()
-
-        WIDGET_PATH.mkdir(exist_ok=True)
 
     def show(self):
         """
@@ -29,16 +29,18 @@ class SchemaExplorer(object):
         self.__schema_list = Dropdown(options=['Choose Schema'] + self.__get_schemas().schemaname.unique().tolist())
         self.__table_list = Dropdown()
         self.__table_detail = Button(description='Table Detail', button_style='success')
+        self.__generate_query = Button(description='Generate SQL', button_style='info')
         self.__query_area = Textarea(
             placeholder='Query',
-            disabled=True
+            layout={'width': '100%', 'height': '500px'}
         )
 
         self.__schema_list.observe(self.__on_schema_change, names='value')
         self.__table_detail.on_click(self.__on_table_detail_click)
+        self.__generate_query.on_click(self.__on_generate_query_click)
 
         display(Label('Schema Explorer'))
-        display(HBox([self.__schema_list, self.__table_list, self.__table_detail]))
+        display(HBox([self.__schema_list, self.__table_list, self.__table_detail, self.__generate_query]))
         display(self.__box)
 
     def __get_schemas(self):
@@ -63,20 +65,41 @@ class SchemaExplorer(object):
         self.__table_list.options = ['Choose Table'] + self.__schemas[
             (self.__schemas.schemaname == change['new'])].tablename.unique().tolist()
 
-    def __on_table_detail_click(self, arg):
+    def __on_button_click(self, type):
         """
         Detail Table Button callback function
         :param arg: ipython widgets default arguments
         :return:
         """
         self.__out.clear_output()
-        detil = self.__schemas[(self.__schemas.schemaname == self.__schema_list.value) & (
+
+        detail = self.__schemas[(self.__schemas.schemaname == self.__schema_list.value) & (
                 self.__schemas.tablename == self.__table_list.value)].reset_index(drop=True)
-        self.__query_area.value = self.__query_builder(detil.schemaname.unique()[0], detil.tablename.unique()[0],
-                                                       detil.name.tolist())
-        with self.__out:
-            display(detil)
-        self.__box.children = [self.__query_area, self.__out]
+
+        if detail.empty:
+            return
+
+        self.__query_area.value = self.__query_builder(detail.schemaname.unique()[0], detail.tablename.unique()[0],
+                                                       detail.name.tolist())
+        if type == 'detail':
+            with self.__out:
+                display(detail)
+            children = self.__out
+        else:
+            children = self.__query_area
+
+        self.__box.children = [children]
+
+    def __on_table_detail_click(self, arg):
+        """
+        Detail Table Button callback function
+        :param arg: ipython widgets default arguments
+        :return:
+        """
+        return self.__on_button_click(type='detail')
+
+    def __on_generate_query_click(self, arg):
+        return self.__on_button_click(type='query')
 
     @staticmethod
     def __query_builder(schema, table, columns):
