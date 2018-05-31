@@ -5,6 +5,7 @@ import sys
 from pandas import DataFrame, read_sql, concat
 from IPython.core import magic_arguments
 from IPython.core.magic import magics_class, Magics, line_magic, cell_magic
+from dawetsql.widgets import SchemaExplorer
 from . import utils
 
 
@@ -175,6 +176,14 @@ class OdbcSqlMagics(Magics):
         """
         df = self.get_dataframe(query)
         df.to_pickle(pickle_name)
+
+    @line_magic('explorer')
+    def explore_schema(self):
+        '''
+        Display schema explorer widgets
+        :return:
+        '''
+        return SchemaExplorer(self)
 
     def __del__(self):
         if self.conn:
