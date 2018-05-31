@@ -2,7 +2,7 @@ from setuptools import setup
 
 setup(
     name='ipython-dawet-sql',
-    version='0.0.1.dev3',
+    version='0.0.1.dev4',
     packages=['dawetsql'],
     url='https://gitlab.com/wakataw/ipython-dawet-sql',
     license='MIT',
@@ -12,6 +12,7 @@ setup(
     install_requires=[
         'pandas',
         'pypyodbc',
-        'ipython'
+        'ipython',
+        'ipywidgets'
     ]
 )
