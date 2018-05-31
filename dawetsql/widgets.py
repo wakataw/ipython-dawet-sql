@@ -15,6 +15,8 @@ class SchemaExplorer(object):
         :param dawetsql: OdbcSqlMagics object
         """
         self.__dawetsql = dawetsql
+        self.__settings = WidgetSettings()
+
         WIDGET_PATH.mkdir(exist_ok=True)
 
     def show(self):
@@ -35,16 +37,9 @@ class SchemaExplorer(object):
         self.__schema_list.observe(self.__on_schema_change, names='value')
         self.__table_detail.on_click(self.__on_table_detail_click)
 
-        display((Label('Schema Explorer'),))
-        display((HBox([self.__schema_list, self.__table_list, self.__table_detail]),))
-        display((self.__box,))
-
-    def __get_settings(self):
-        """
-        Get widget setting from external file
-        :return:
-        """
-        self.__settings = WidgetSettings()
+        display(Label('Schema Explorer'))
+        display(HBox([self.__schema_list, self.__table_list, self.__table_detail]))
+        display(self.__box)
 
     def __get_schemas(self):
         """
