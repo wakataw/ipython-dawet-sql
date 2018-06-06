@@ -123,7 +123,7 @@ class SchemaExplorer(object):
         :param columns: table columns
         :return: SQL select query string
         """
-        query = "SELECT \n{}".format(',\n'.join(['    {}'.format(col) for col in columns]))[:-1]
+        query = "SELECT \n{}".format(',\n'.join(['    {}'.format(col) for col in columns]))
         query += "\nFROM \n    {}.{}".format(schema, table)
         return query
 
