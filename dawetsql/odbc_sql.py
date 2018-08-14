@@ -34,7 +34,7 @@ class OdbcSqlMagics(Magics):
     @line_magic('dawetsql')
     @magic_arguments.magic_arguments()
     @magic_arguments.argument('-u', '--user', type=str, help="Dawet User")
-    @magic_arguments.argument('-p', '--password', type='str', help="Dawet Password")
+    @magic_arguments.argument('-p', '--password', type=str, help="Dawet Password")
     @magic_arguments.argument('-d', '--dsn', type=str, help="Dawet DSN")
     @magic_arguments.argument('-c', '--chunksize', type=int, default=100, help="ODBC Fetch size")
     def odbc_connect(self, arg):
