@@ -17,14 +17,14 @@ class OdbcSqlMagics(Magics):
     def __init__(self, *args, **kwargs):
         super(OdbcSqlMagics, self).__init__(*args, **kwargs)
 
-    def __connect(self, dsn):
+    def __connect(self, dsn, username, password):
         """
         Open database connection
         :param dsn: ODBC DSN
         :return:
         """
         try:
-            self.conn = pypyodbc.connect("DSN={}".format(dsn))
+            self.conn = pypyodbc.connect("DSN={};Username={};Password={}".format(dsn, username, password))
             if self.conn:
                 print("Connected to {}".format(dsn))
         except Exception as e:
@@ -33,8 +33,10 @@ class OdbcSqlMagics(Magics):
 
     @line_magic('dawetsql')
     @magic_arguments.magic_arguments()
+    @magic_arguments.argument('-u', '--user', type=str, help="Dawet User")
+    @magic_arguments.argument('-p', '--password', type='str', help="Dawet Password")
+    @magic_arguments.argument('-d', '--dsn', type=str, help="Dawet DSN")
     @magic_arguments.argument('-c', '--chunksize', type=int, default=100, help="ODBC Fetch size")
-    @magic_arguments.argument('dsn', type=str, help="ODBC DSN")
     def odbc_connect(self, arg):
         """
         Open Database Connection line magic method
@@ -48,7 +50,7 @@ class OdbcSqlMagics(Magics):
 
         self.chunksize = args.chunksize
 
-        return self.__connect(args.dsn)
+        return self.__connect(args.dsn, args.user, args.password)
 
     @line_magic('dawetsqlclose')
     def odbc_disconnect(self, *args, **kwargs):
@@ -68,7 +70,6 @@ class OdbcSqlMagics(Magics):
     @cell_magic('dawetsql')
     @magic_arguments.magic_arguments()
     @magic_arguments.argument('-l', '--limit', type=int, default=10, help="Set result limit")
-    @magic_arguments.argument('-x', '--dsn', type=str, help="ODBC DSN")
     @magic_arguments.argument('-o', '--ouput', default='_', type=str, help="File or Variable name for results data")
     def odbc_sql(self, arg, cell=None):
         """
@@ -87,12 +88,9 @@ class OdbcSqlMagics(Magics):
             return
 
         if not self.conn:
-            if args.dsn:
-                self.__connect(args.dsn)
-            else:
-                logging.error(
-                    "Please open connection first using %dawetsql line magic or pass -x parameter followed by odbc dsn")
-                return
+            logging.error(
+                "Please open connection first using %dawetsql line magic")
+            return
 
         if valid_name != '_':
             if valid_name.lower().endswith('.csv'):
