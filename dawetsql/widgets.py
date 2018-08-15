@@ -45,7 +45,7 @@ class SchemaExplorer(object):
         self.__data_preview.on_click(self.__on_data_preview_click)
 
         display(Label('Schema Explorer'))
-        display(HBox([self.__schema_list, self.__table_list, self.__table_detail, self.__generate_query]))
+        display(HBox([self.__schema_list, self.__table_list, self.__table_detail, self.__generate_query, self.__data_preview]))
         display(self.__box)
 
     def __get_schemas(self, force=False):
