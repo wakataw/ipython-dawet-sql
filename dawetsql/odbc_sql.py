@@ -17,14 +17,17 @@ class OdbcSqlMagics(Magics):
     def __init__(self, *args, **kwargs):
         super(OdbcSqlMagics, self).__init__(*args, **kwargs)
 
-    def __connect(self, dsn, username, password):
+    def __connect(self, dsn, username, password, connection_string):
         """
         Open database connection
         :param dsn: ODBC DSN
         :return:
         """
         try:
-            self.conn = pypyodbc.connect("DSN={};Username={};Password={}".format(dsn, username, password))
+            if connection_string:
+                self.conn = pypyodbc.connect(connection_string)
+            else:
+                self.conn = pypyodbc.connect("DSN={};Username={};Password={}".format(dsn, username, password))
             if self.conn:
                 print("Connected to {}".format(dsn))
                 self.__user = username
@@ -37,6 +40,7 @@ class OdbcSqlMagics(Magics):
     @magic_arguments.argument('-u', '--user', type=str, help="Dawet User")
     @magic_arguments.argument('-p', '--password', type=str, help="Dawet Password")
     @magic_arguments.argument('-d', '--dsn', type=str, help="Dawet DSN")
+    @magic_arguments.argument('-x', '--connection', type=str, help="ODBC Connection String")
     @magic_arguments.argument('-c', '--chunksize', type=int, default=100, help="ODBC Fetch size")
     def odbc_connect(self, arg):
         """
@@ -51,7 +55,7 @@ class OdbcSqlMagics(Magics):
 
         self.chunksize = args.chunksize
 
-        return self.__connect(args.dsn, args.user, args.password)
+        return self.__connect(args.dsn, args.user, args.password, args.connection)
 
     @line_magic('dawetsqlclose')
     def odbc_disconnect(self, *args, **kwargs):
