@@ -113,13 +113,13 @@ class OdbcSqlMagics(Magics):
         sys.stdout.write("\rTotal {} row(s) downloaded".format(total))
         sys.stdout.flush()
 
-    def get_dataframe(self, query):
+    def get_dataframe(self, query, verbose=True):
         """
         Store query result to dataframe
         :param query: SQL Query
         :return: pandas dataframe
         """
-        print("Fetching result", flush=True)
+        print("Fetching result", flush=True) if verbose else None
         result = self.download(query)
         total = 0
         df_list = []
@@ -127,7 +127,7 @@ class OdbcSqlMagics(Magics):
         for chunk in result:
             df_list.append(chunk)
             total += len(chunk)
-            self.print_process(total)
+            self.print_process(total) if verbose else None
 
         if df_list:
             df = concat(df_list, ignore_index=True)
