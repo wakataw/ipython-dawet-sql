@@ -126,7 +126,14 @@ class OdbcSqlMagics(Magics):
         :return: pandas dataframe
         """
         print("Fetching result", flush=True) if verbose else None
-        result = self.download(query)
+
+        try:
+            result = self.download(query)
+        except Exception as e:
+            logging.error(e.__class__.__name__)
+            logging.error(e)
+            return
+
         total = 0
         df_list = []
 
@@ -148,7 +155,13 @@ class OdbcSqlMagics(Magics):
         :param filename: csv filename
         :return:
         """
-        result = self.download(query)
+        try:
+            result = self.download(query)
+        except Exception as e:
+            logging.error(e.__class__.__name__)
+            logging.error(e)
+            return
+
         total = 0
         header = True
 
