@@ -27,6 +27,7 @@ class OdbcSqlMagics(Magics):
             self.conn = pypyodbc.connect("DSN={};Username={};Password={}".format(dsn, username, password))
             if self.conn:
                 print("Connected to {}".format(dsn))
+                self.__user = username
         except Exception as e:
             logging.error(e)
             return
@@ -106,6 +107,7 @@ class OdbcSqlMagics(Magics):
         return self.to_dataframe(utils.limit_query(cell, args.limit), valid_name)
 
     def download(self, query):
+        utils.log_query(self.__user, query)
         return read_sql(query, self.conn, chunksize=self.chunksize)
 
     @staticmethod

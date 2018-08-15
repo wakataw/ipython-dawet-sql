@@ -3,11 +3,7 @@ import pandas
 
 from IPython.display import display
 from ipywidgets import Textarea, Button, HBox, VBox, Output, Dropdown, Label
-from pathlib import Path
-from . import  utils
-
-WIDGET_PATH = Path.home().joinpath('.dawetsql')
-
+from . import utils
 
 class SchemaExplorer(object):
 
@@ -16,7 +12,7 @@ class SchemaExplorer(object):
         Initialize SchemaExplorer
         :param dawetsql: OdbcSqlMagics object
         """
-        WIDGET_PATH.mkdir(exist_ok=True)
+        utils.widget_path.mkdir(exist_ok=True)
 
         self.__dawetsql = dawetsql
         self.__settings = WidgetSettings()
@@ -53,7 +49,7 @@ class SchemaExplorer(object):
         Get database schema, table, and columns
         :return:
         """
-        pickle_path = WIDGET_PATH.joinpath('schema.pkl')
+        pickle_path = utils.widget_path.joinpath('schema.pkl')
 
         if force == False and pickle_path.is_file():
             self.__schemas = pandas.read_pickle(pickle_path)
@@ -148,7 +144,7 @@ class SchemaExplorer(object):
 
 class WidgetSettings(object):
 
-    __settings_file = WIDGET_PATH.joinpath('settings.ini')
+    __settings_file = utils.widget_path.joinpath('settings.ini')
     __settings = configparser.ConfigParser()
 
     def __init__(self):
