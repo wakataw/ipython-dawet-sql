@@ -4,6 +4,7 @@ import pandas
 from IPython.display import display
 from ipywidgets import Textarea, Button, HBox, VBox, Output, Dropdown, Label
 from pathlib import Path
+from . import  utils
 
 WIDGET_PATH = Path.home().joinpath('.dawetsql')
 
@@ -32,6 +33,7 @@ class SchemaExplorer(object):
         self.__table_list = Dropdown()
         self.__table_detail = Button(description='Table Detail', button_style='success')
         self.__generate_query = Button(description='Generate SQL', button_style='info')
+        self.__data_preview = Button(description='Preview Data', button_style='primary')
         self.__query_area = Textarea(
             placeholder='Query',
             layout={'width': '100%', 'height': '500px'}
@@ -40,9 +42,10 @@ class SchemaExplorer(object):
         self.__schema_list.observe(self.__on_schema_change, names='value')
         self.__table_detail.on_click(self.__on_table_detail_click)
         self.__generate_query.on_click(self.__on_generate_query_click)
+        self.__data_preview.on_click(self.__on_data_preview_click)
 
         display(Label('Schema Explorer'))
-        display(HBox([self.__schema_list, self.__table_list, self.__table_detail, self.__generate_query]))
+        display(HBox([self.__schema_list, self.__table_list, self.__table_detail, self.__generate_query, self.__data_preview]))
         display(self.__box)
 
     def __get_schemas(self, force=False):
@@ -66,6 +69,14 @@ class SchemaExplorer(object):
 
         return self.__schemas
 
+    def __get_preview(self):
+        """
+        Get table preview
+        :param query: SQL Query
+        :return: preview dataframe
+        """
+        preview_query = utils.limit_query(self.__query_area.value, 10)
+        return self.__dawetsql.get_dataframe(preview_query)
 
     def __on_schema_change(self, change):
         """
@@ -98,6 +109,10 @@ class SchemaExplorer(object):
             with self.__out:
                 display(detail)
             children = self.__out
+        elif type == 'preview':
+            with self.__out:
+                display(self.__get_preview())
+            children = self.__out
         else:
             children = self.__query_area
 
@@ -114,6 +129,9 @@ class SchemaExplorer(object):
     def __on_generate_query_click(self, arg):
         return self.__on_button_click(type='query')
 
+    def __on_data_preview_click(self, arg):
+        return self.__on_button_click(type='preview')
+
     @staticmethod
     def __query_builder(schema, table, columns):
         """
@@ -123,7 +141,7 @@ class SchemaExplorer(object):
         :param columns: table columns
         :return: SQL select query string
         """
-        query = "SELECT \n{}".format(',\n'.join(['    {}'.format(col) for col in columns]))[:-1]
+        query = "SELECT \n{}".format(',\n'.join(['    {}'.format(col) for col in columns]))
         query += "\nFROM \n    {}.{}".format(schema, table)
         return query
 

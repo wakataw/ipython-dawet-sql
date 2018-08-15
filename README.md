@@ -27,10 +27,8 @@ You can find available tag [here](https://gitlab.com/wakataw/ipython-dawet-sql/t
 
 #### Open Connection Using Line Magic
 ```
-%dawetsql dsn
+%dawetsql --dsn dsnname --user username --password secretPassword
 ```
-
-This is optional, you can pass parameter from `%%dawetsql` cell magic while executing query.
 
 #### Set Chunk Size
 
@@ -59,14 +57,6 @@ Query Results Preview is presented using pandas dataframe with default limit 10 
 You can access preview dataframe within notebook by calling `_` variable.
 
 ### Cell Magic Advance Usage
-
-#### Start Connection and Run Query
-
-```
-%%dawetsql -x dsn
-SELECT * FROM tables
-WHERE somecolumn = 'somevalue'
-```
 
 #### Store Query Result to Variable
 
@@ -102,15 +92,20 @@ Widget that help you explore database schema, table, columns name and type.
 %explorer [-f --force]
 ```
 
-> Table Detail
+**Table Detail**
 
 
-![table detail](img/widget01.png)
+![table detail](img/widget01.JPG)
 
-> Query Builder
+**Query Builder**
 
 
-![query builder](img/widget02.png)
+![query builder](img/widget02.JPG)
+
+**Table Data Preview**
+
+
+![query builder](img/widget03.JPG)
 
 ### Settings
 
