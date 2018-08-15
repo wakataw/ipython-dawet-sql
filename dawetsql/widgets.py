@@ -69,6 +69,14 @@ class SchemaExplorer(object):
 
         return self.__schemas
 
+    def __get_preview(self):
+        """
+        Get table preview
+        :param query: SQL Query
+        :return: preview dataframe
+        """
+        preview_query = utils.limit_query(self.__query_area.value, 10)
+        return self.__dawetsql.get_dataframe(preview_query)
 
     def __on_schema_change(self, change):
         """
@@ -102,12 +110,8 @@ class SchemaExplorer(object):
                 display(detail)
             children = self.__out
         elif type == 'preview':
-            preview_query = utils.limit_query(self.__query_area.value, 10)
-            preview_df = self.__dawetsql.get_dataframe(preview_query)
-
             with self.__out:
-                display(preview_df)
-
+                display(self.__get_preview())
             children = self.__out
         else:
             children = self.__query_area
