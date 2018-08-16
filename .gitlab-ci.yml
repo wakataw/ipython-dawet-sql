@@ -1,4 +1,4 @@
-image: python:latest
+image: python:3.6.6-jessie
 
 variables:
   PIP_CACHE_DIR: "$CI_PROJECT_DIR/.cache"
@@ -9,7 +9,8 @@ cache:
     - venv/
 
 before_script:
-  - apt-get install unixodbc-dev python3-dev
+  - apt-get update -qq && apt-get upgrade -y && apt-get install -y unixodbc-dev python3-dev odbcinst odbc-postgresql \
+      unixodbc
   - python -V
   - pip install virtualenv
   - virtualenv venv
