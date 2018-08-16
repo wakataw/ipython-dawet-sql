@@ -1,5 +1,7 @@
 import re
 import csv
+import os
+
 from datetime import datetime
 from pathlib import Path
 
@@ -9,13 +11,16 @@ alphanum_name = lambda x: ''.join(alphanum.findall(x))
 query_pattern = re.compile(r'(.*)LIMIT\s+\d+$', flags=re.DOTALL|re.I)
 widget_path = Path.home().joinpath('.dawetsql')
 
+def check_path_sep(filename):
+    return os.sep.join([alphanum_name(i) for i in filename.split(os.sep)])
+
 def validate_name(varname):
     valid_name = cleanser.sub('', varname)
 
     if valid_name.lower().endswith('.csv') or valid_name.lower().endswith('.pkl'):
         _valid_name = valid_name.split('.')
         filetype = _valid_name[-1]
-        filename = alphanum_name(''.join(_valid_name[:-1]))
+        filename = check_path_sep(''.join(_valid_name[:-1]))
 
         if filename == '':
             return False, valid_name
