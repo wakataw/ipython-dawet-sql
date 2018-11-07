@@ -13,20 +13,25 @@ from . import utils
 class OdbcSqlMagics(Magics):
     conn = None
     chunksize = 500
+    reconnect = False
 
     def __init__(self, *args, **kwargs):
         super(OdbcSqlMagics, self).__init__(*args, **kwargs)
 
-    def __connect(self, dsn, username, password):
+    def __connect(self, dsn, username, password, connection_string, verbose=True):
         """
         Open database connection
         :param dsn: ODBC DSN
         :return:
         """
         try:
-            self.conn = pypyodbc.connect("DSN={};Username={};Password={}".format(dsn, username, password))
+            if connection_string:
+                self.conn = pypyodbc.connect(connection_string)
+            else:
+                self.conn = pypyodbc.connect("DSN={};Username={};Password={}".format(dsn, username, password))
             if self.conn:
-                print("Connected to {}".format(dsn))
+                if verbose: print("Connected to {}".format(dsn))
+                self.__user = username
         except Exception as e:
             logging.error(e)
             return
@@ -36,7 +41,9 @@ class OdbcSqlMagics(Magics):
     @magic_arguments.argument('-u', '--user', type=str, help="Dawet User")
     @magic_arguments.argument('-p', '--password', type=str, help="Dawet Password")
     @magic_arguments.argument('-d', '--dsn', type=str, help="Dawet DSN")
+    @magic_arguments.argument('-x', '--connection', type=str, help="ODBC Connection String")
     @magic_arguments.argument('-c', '--chunksize', type=int, default=100, help="ODBC Fetch size")
+    @magic_arguments.argument('-a', '--reconnect', action='store_true', help='Auto Reconnect')
     def odbc_connect(self, arg):
         """
         Open Database Connection line magic method
@@ -50,7 +57,11 @@ class OdbcSqlMagics(Magics):
 
         self.chunksize = args.chunksize
 
-        return self.__connect(args.dsn, args.user, args.password)
+        if args.reconnect:
+            self.args = args
+            self.reconnect = True
+
+        return self.__connect(args.dsn, args.user, args.password, args.connection)
 
     @line_magic('dawetsqlclose')
     def odbc_disconnect(self, *args, **kwargs):
@@ -106,7 +117,20 @@ class OdbcSqlMagics(Magics):
         return self.to_dataframe(utils.limit_query(cell, args.limit), valid_name)
 
     def download(self, query):
-        return read_sql(query, self.conn, chunksize=self.chunksize)
+        utils.log_query(self.__user, query)
+        data = None
+        try:
+            data = read_sql(query, self.conn, chunksize=self.chunksize)
+        except Exception as e:
+            logging.error(e.__class__.__name__)
+            logging.error(e)
+
+            if utils.teiid_resource_exception(str(e)) and self.reconnect:
+                self.__connect(self.args.dsn, self.args.user, self.args.password, False, verbose=False)
+                return self.download(query)
+
+        return data
+
 
     @staticmethod
     def print_process(total):
@@ -120,7 +144,12 @@ class OdbcSqlMagics(Magics):
         :return: pandas dataframe
         """
         print("Fetching result", flush=True) if verbose else None
+
         result = self.download(query)
+
+        if result is None:
+            return
+
         total = 0
         df_list = []
 
@@ -143,6 +172,10 @@ class OdbcSqlMagics(Magics):
         :return:
         """
         result = self.download(query)
+
+        if result is None:
+            return
+
         total = 0
         header = True
 
@@ -161,6 +194,10 @@ class OdbcSqlMagics(Magics):
         :return:
         """
         df = self.get_dataframe(query)
+
+        if df is None:
+            return
+
         self.shell.user_ns[varname] = df
         if not download:
             return df
@@ -173,6 +210,10 @@ class OdbcSqlMagics(Magics):
         :return:
         """
         df = self.get_dataframe(query)
+
+        if df is None:
+            return
+
         df.to_pickle(pickle_name)
 
     @line_magic('explorer')
