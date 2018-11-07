@@ -8,7 +8,7 @@ from pathlib import Path
 cleanser = re.compile(r'\s+|"|\'')
 alphanum = re.compile(r'[a-zA-Z0-9_]')
 alphanum_name = lambda x: ''.join(alphanum.findall(x))
-teiid_resource_exception = re.compile(r'javax.resource.ResourceException')
+teiid_resource_exception = re.compile(r'javax.resource.ResourceException', flags=re.DOTALL)
 query_pattern = re.compile(r'(.*)LIMIT\s+(\d+)$', flags=re.DOTALL|re.I)
 widget_path = Path.home().joinpath('.dawetsql')
 
