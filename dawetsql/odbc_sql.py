@@ -70,9 +70,12 @@ class OdbcSqlMagics(Magics):
             self.chipper = self.generate_chipper()
             self.__dsn = args.dsn
             self.__user = args.user
-            self.__password = self.chipper.encrypt(args.password.encode('utf8'))
+            
+            if len(self.__password) > 0:
+                self.__password = self.chipper.encrypt(args.password.encode('utf8'))
+
             if len(args.connection) > 0:
-                self.__conn_string = args.connection
+                self.__conn_string = self.chipper.encrypt(args.connection.('utf8'))
             else:
                 self.__conn_string = False
 
@@ -96,11 +99,20 @@ class OdbcSqlMagics(Magics):
     @line_magic('dawetsqlreconnect')
     def odbc_reconnect(self, args, cell=None):
         if not self.reconnect:
-            logging.error("You did not use reconnect arguments, try re initialize dawetsql with -r/--reconnect argument")
-            raise Exception("Arguments Not Found")
+            logging.error("You did not use reconnect arguments, try re initialize dawetsql with -a/--reconnect argument")
+            return
 
         self.odbc_disconnect()
-        return self.__connect(self.__dsn, self.__user, str(self.chipper.decrypt(self.__password)), self.__conn_string, verbose=False)
+
+        if self.__conn_string:
+            connection_string = str(self.chipper.decrypt(self.__conn_string))
+        
+        if len(self.__password) > 0:
+            password = str(self.chipper.decrypt(self.__password)
+        else:
+            password = None
+
+        return self.__connect(self.__dsn, self.__user, password, connection_string, verbose=False)
 
     @cell_magic('dawetsql')
     @magic_arguments.magic_arguments()
