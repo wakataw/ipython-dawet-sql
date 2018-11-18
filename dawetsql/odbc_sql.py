@@ -20,6 +20,7 @@ class OdbcSqlMagics(Magics):
     __user = None
     __password = None
     __dsn = None
+    __conn_string = None
 
     def __init__(self, *args, **kwargs):
         super(OdbcSqlMagics, self).__init__(*args, **kwargs)
@@ -70,6 +71,10 @@ class OdbcSqlMagics(Magics):
             self.__dsn = args.dsn
             self.__user = args.user
             self.__password = self.chipper.encrypt(args.password.encode('utf8'))
+            if len(args.connection) > 0:
+                self.__conn_string = args.connection
+            else:
+                self.__conn_string = False
 
         return self.__connect(args.dsn, args.user, args.password, args.connection)
 
@@ -89,9 +94,13 @@ class OdbcSqlMagics(Magics):
             return
 
     @line_magic('dawetsqlreconnect')
-    def odbc_reconnect(self):
+    def odbc_reconnect(self, args, cell=None):
+        if not self.reconnect:
+            logging.error("You did not use reconnect arguments, try re initialize dawetsql with -r/--reconnect argument")
+            raise Exception("Arguments Not Found")
+
         self.odbc_disconnect()
-        return self.__connect(self.__dsn, self.__user, str(self.chipper.decrypt(self.__password)), False, verbose=False)
+        return self.__connect(self.__dsn, self.__user, str(self.chipper.decrypt(self.__password)), self.__conn_string, verbose=False)
 
     @cell_magic('dawetsql')
     @magic_arguments.magic_arguments()
@@ -148,6 +157,9 @@ class OdbcSqlMagics(Magics):
                 self.retry += 1
                 self.odbc_reconnect()
                 return self.download(query)
+            else:
+                raise e
+                return
 
         return data
 
