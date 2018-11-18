@@ -71,10 +71,10 @@ class OdbcSqlMagics(Magics):
             self.__dsn = args.dsn
             self.__user = args.user
             
-            if len(self.__password) > 0:
+            if args.password:
                 self.__password = self.chipper.encrypt(args.password.encode('utf8'))
 
-            if len(args.connection) > 0:
+            if args.connection:
                 self.__conn_string = self.chipper.encrypt(args.connection.encode('utf8'))
             else:
                 self.__conn_string = False
