@@ -31,10 +31,6 @@ class OdbcSqlMagics(Magics):
         :param dsn: ODBC DSN
         :return:
         """
-        print(dsn)
-        print(username)
-        print(password)
-        print(connection_string)
         try:
             if connection_string:
                 self.conn = pypyodbc.connect(connection_string)
