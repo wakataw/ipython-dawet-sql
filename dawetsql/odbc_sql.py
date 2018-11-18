@@ -36,8 +36,8 @@ class OdbcSqlMagics(Magics):
                 self.conn = pypyodbc.connect(connection_string)
             else:
                 self.conn = pypyodbc.connect("DSN={};Username={};Password={}".format(dsn, username, password))
-            if self.conn:
-                if verbose: print("Connected to {}".format(dsn))
+            if self.conn and verbose:
+                    print("Connected to {}".format(dsn))
         except Exception as e:
             logging.error(e)
             return
@@ -75,7 +75,7 @@ class OdbcSqlMagics(Magics):
                 self.__password = self.chipper.encrypt(args.password.encode('utf8'))
 
             if len(args.connection) > 0:
-                self.__conn_string = self.chipper.encrypt(args.connection.('utf8'))
+                self.__conn_string = self.chipper.encrypt(args.connection.encode('utf8'))
             else:
                 self.__conn_string = False
 
@@ -106,9 +106,11 @@ class OdbcSqlMagics(Magics):
 
         if self.__conn_string:
             connection_string = str(self.chipper.decrypt(self.__conn_string))
+        else:
+            connection_string = False
         
         if len(self.__password) > 0:
-            password = str(self.chipper.decrypt(self.__password)
+            password = str(self.chipper.decrypt(self.__password))
         else:
             password = None
 
@@ -171,7 +173,6 @@ class OdbcSqlMagics(Magics):
                 return self.download(query)
             else:
                 raise e
-                return
 
         return data
 
@@ -180,6 +181,7 @@ class OdbcSqlMagics(Magics):
         Store query result to dataframe
         :param query: SQL Query
         :return: pandas dataframe
+        :verbose: print process to stdout
         """
         print("Fetching result", flush=True) if verbose else None
 
@@ -258,10 +260,10 @@ class OdbcSqlMagics(Magics):
     @magic_arguments.magic_arguments()
     @magic_arguments.argument('-f', '--force', action='store_true', help="Force explorer to re-index schema")
     def explore_schema(self, arg):
-        '''
+        """
         Display schema explorer widgets
         :return:
-        '''
+        """
         args = magic_arguments.parse_argstring(self.explore_schema, arg)
 
         print('Fetching schema detail..')

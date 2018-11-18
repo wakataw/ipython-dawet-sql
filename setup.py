@@ -13,6 +13,7 @@ setup(
         'pandas',
         'pypyodbc',
         'ipython',
-        'ipywidgets'
+        'ipywidgets',
+        'cryptography'
     ]
 )
