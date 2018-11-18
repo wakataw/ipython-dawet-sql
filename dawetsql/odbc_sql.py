@@ -31,6 +31,10 @@ class OdbcSqlMagics(Magics):
         :param dsn: ODBC DSN
         :return:
         """
+        print(dsn)
+        print(username)
+        print(password)
+        print(connection_string)
         try:
             if connection_string:
                 self.conn = pypyodbc.connect(connection_string)
@@ -105,12 +109,12 @@ class OdbcSqlMagics(Magics):
         self.odbc_disconnect()
 
         if self.__conn_string:
-            connection_string = str(self.chipper.decrypt(self.__conn_string))
+            connection_string = self.chipper.decrypt(self.__conn_string).decode('utf8')
         else:
             connection_string = False
         
         if self.__password:
-            password = str(self.chipper.decrypt(self.__password))
+            password = self.chipper.decrypt(self.__password).decode('utf8')
         else:
             password = None
 
@@ -163,7 +167,7 @@ class OdbcSqlMagics(Magics):
             logging.error(e.__class__.__name__)
             logging.error(e)
 
-            if utils.teiid_resource_exception(str(e)) and self.reconnect:
+            if utils.teiid_resource_exception.findall(str(e)) and self.reconnect:
                 if self.retry >= self.max_retry:
                     self.retry = 0
                     raise Exception('Max Retry Exception')
