@@ -30,19 +30,26 @@ You can find available tag [here](https://gitlab.com/wakataw/ipython-dawet-sql/t
 %dawetsql --dsn dsnname --user username --password secretPassword
 ```
 
-#### Set Chunk Size
+Available arguments
 
-By default, `dawetsql` set chunk size to 500 rows. You can change it by passing `-c` or `--chunksize` arguments
-
-```
-%dawetsql -c 100 dsn
-```
+Arguments | Type | Default | Descriptions
+---|---|---|---
+`-c --chunksize` | Integer | 100 | Set ODBC Fetch Size
+`-x --connection` | String | None | ODBC Connection String (Not Implemented)
+`-a --reconnect` | Boolean | False | Try to reconnect if session expired 
+`-r --retry` | Integer | 3 | Maximum reconnect retry
 
 
 #### Close Connection
 
 ```
 %dawetsqlclose
+```
+
+### Reconnect 
+
+```
+%dawetsqlreconnect
 ```
 
 ### Run SQL Query
@@ -55,6 +62,13 @@ WHERE somecolumn = 'somevalue'
 
 Query Results Preview is presented using pandas dataframe with default limit 10 rows.
 You can access preview dataframe within notebook by calling `_` variable.
+
+Available arguments
+
+Arguments | Type | Default | Descriptions
+---|---|---|---
+`-l --limit` | Integer | 10 | Limit Query result preview
+`-o --output` | String | `_` | Result output. Currently only support exporting result to variable, csv, and pickle
 
 ### Cell Magic Advance Usage
 

@@ -4,12 +4,14 @@ import os
 
 from datetime import datetime
 from pathlib import Path
+from base64 import b64encode, b64decode
 
 cleanser = re.compile(r'\s+|"|\'')
 alphanum = re.compile(r'[a-zA-Z0-9_]')
 alphanum_name = lambda x: ''.join(alphanum.findall(x))
 query_pattern = re.compile(r'(.*)LIMIT\s+(\d+)$', flags=re.DOTALL|re.I)
 widget_path = Path.home().joinpath('.dawetsql')
+teiid_resource_exception = re.compile(r'javax.resource.ResourceException', flags=re.DOTALL)
 
 def check_path_sep(filename):
     return os.sep.join([alphanum_name(i) for i in filename.split(os.sep)])
