@@ -7,6 +7,7 @@ from IPython.core import magic_arguments
 from IPython.core.magic import magics_class, Magics, line_magic, cell_magic
 from dawetsql.widgets import SchemaExplorer
 from . import utils
+from cryptography.fernet import Fernet
 
 
 @magics_class
@@ -14,6 +15,11 @@ class OdbcSqlMagics(Magics):
     conn = None
     chunksize = 500
     reconnect = False
+    max_retry = 3
+    retry = 0
+    __user = None
+    __password = None
+    __dsn = None
 
     def __init__(self, *args, **kwargs):
         super(OdbcSqlMagics, self).__init__(*args, **kwargs)
@@ -31,7 +37,6 @@ class OdbcSqlMagics(Magics):
                 self.conn = pypyodbc.connect("DSN={};Username={};Password={}".format(dsn, username, password))
             if self.conn:
                 if verbose: print("Connected to {}".format(dsn))
-                self.__user = username
         except Exception as e:
             logging.error(e)
             return
@@ -44,6 +49,7 @@ class OdbcSqlMagics(Magics):
     @magic_arguments.argument('-x', '--connection', type=str, help="ODBC Connection String")
     @magic_arguments.argument('-c', '--chunksize', type=int, default=100, help="ODBC Fetch size")
     @magic_arguments.argument('-a', '--reconnect', action='store_true', help='Auto Reconnect')
+    @magic_arguments.argument('-r', '--retry', type=int, default=3, help='Max Retry')
     def odbc_connect(self, arg):
         """
         Open Database Connection line magic method
@@ -56,10 +62,14 @@ class OdbcSqlMagics(Magics):
         args = magic_arguments.parse_argstring(self.odbc_connect, arg)
 
         self.chunksize = args.chunksize
+        self.max_retry = args.retry
 
         if args.reconnect:
-            self.args = args
             self.reconnect = True
+            self.chipper = self.generate_chipper()
+            self.__dsn = args.dsn
+            self.__user = args.user
+            self.__password = self.chipper.encrypt(args.password.encode('utf8'))
 
         return self.__connect(args.dsn, args.user, args.password, args.connection)
 
@@ -77,6 +87,11 @@ class OdbcSqlMagics(Magics):
         finally:
             self.conn = None
             return
+
+    @line_magic('dawetsqlreconnect')
+    def odbc_reconnect(self):
+        self.odbc_disconnect()
+        return self.__connect(self.__dsn, self.__user, str(self.chipper.decrypt(self.__password)), False, verbose=False)
 
     @cell_magic('dawetsql')
     @magic_arguments.magic_arguments()
@@ -126,16 +141,15 @@ class OdbcSqlMagics(Magics):
             logging.error(e)
 
             if utils.teiid_resource_exception(str(e)) and self.reconnect:
-                self.__connect(self.args.dsn, self.args.user, self.args.password, False, verbose=False)
+                if self.retry >= self.max_retry:
+                    self.retry = 0
+                    raise Exception('Max Retry Exception')
+
+                self.retry += 1
+                self.odbc_reconnect()
                 return self.download(query)
 
         return data
-
-
-    @staticmethod
-    def print_process(total):
-        sys.stdout.write("\rTotal {} row(s) downloaded".format(total))
-        sys.stdout.flush()
 
     def get_dataframe(self, query, verbose=True):
         """
@@ -230,6 +244,15 @@ class OdbcSqlMagics(Magics):
 
         explorer = SchemaExplorer(self)
         explorer.show(force=args.force)
+
+    @staticmethod
+    def generate_chipper():
+        return Fernet(Fernet.generate_key())
+
+    @staticmethod
+    def print_process(total):
+        sys.stdout.write("\rTotal {} row(s) downloaded".format(total))
+        sys.stdout.flush()
 
     def __del__(self):
         if self.conn:
