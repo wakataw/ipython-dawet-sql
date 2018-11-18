@@ -30,12 +30,17 @@ You can find available tag [here](https://gitlab.com/wakataw/ipython-dawet-sql/t
 %dawetsql --dsn dsnname --user username --password secretPassword
 ```
 
+With connection string
+```
+%dawetsql --connection "Driver={MariaDB ODBC 3.0 Driver};Server=localhost;UID=myUsername;PWD=myPassword;DB=myDatabase;Port=3306"
+```
+
 Available arguments
 
 Arguments | Type | Default | Descriptions
 ---|---|---|---
 `-c --chunksize` | Integer | 100 | Set ODBC Fetch Size
-`-x --connection` | String | None | ODBC Connection String (Not Implemented)
+`-x --connection` | String | None | ODBC Connection String
 `-a --reconnect` | Boolean | False | Try to reconnect if session expired 
 `-r --retry` | Integer | 3 | Maximum reconnect retry
 

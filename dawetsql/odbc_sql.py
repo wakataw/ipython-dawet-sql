@@ -20,6 +20,7 @@ class OdbcSqlMagics(Magics):
     __user = None
     __password = None
     __dsn = None
+    __conn_string = None
 
     def __init__(self, *args, **kwargs):
         super(OdbcSqlMagics, self).__init__(*args, **kwargs)
@@ -30,13 +31,17 @@ class OdbcSqlMagics(Magics):
         :param dsn: ODBC DSN
         :return:
         """
+        print(dsn)
+        print(username)
+        print(password)
+        print(connection_string)
         try:
             if connection_string:
                 self.conn = pypyodbc.connect(connection_string)
             else:
                 self.conn = pypyodbc.connect("DSN={};Username={};Password={}".format(dsn, username, password))
-            if self.conn:
-                if verbose: print("Connected to {}".format(dsn))
+            if self.conn and verbose:
+                    print("Connected to {}".format(dsn))
         except Exception as e:
             logging.error(e)
             return
@@ -69,7 +74,14 @@ class OdbcSqlMagics(Magics):
             self.chipper = self.generate_chipper()
             self.__dsn = args.dsn
             self.__user = args.user
-            self.__password = self.chipper.encrypt(args.password.encode('utf8'))
+            
+            if args.password:
+                self.__password = self.chipper.encrypt(args.password.encode('utf8'))
+
+            if args.connection:
+                self.__conn_string = self.chipper.encrypt(args.connection.encode('utf8'))
+            else:
+                self.__conn_string = False
 
         return self.__connect(args.dsn, args.user, args.password, args.connection)
 
@@ -89,9 +101,24 @@ class OdbcSqlMagics(Magics):
             return
 
     @line_magic('dawetsqlreconnect')
-    def odbc_reconnect(self):
+    def odbc_reconnect(self, args, cell=None):
+        if not self.reconnect:
+            logging.error("You did not use reconnect arguments, try re initialize dawetsql with -a/--reconnect argument")
+            return
+
         self.odbc_disconnect()
-        return self.__connect(self.__dsn, self.__user, str(self.chipper.decrypt(self.__password)), False, verbose=False)
+
+        if self.__conn_string:
+            connection_string = self.chipper.decrypt(self.__conn_string).decode('utf8')
+        else:
+            connection_string = False
+        
+        if self.__password:
+            password = self.chipper.decrypt(self.__password).decode('utf8')
+        else:
+            password = None
+
+        return self.__connect(self.__dsn, self.__user, password, connection_string, verbose=False)
 
     @cell_magic('dawetsql')
     @magic_arguments.magic_arguments()
@@ -140,7 +167,7 @@ class OdbcSqlMagics(Magics):
             logging.error(e.__class__.__name__)
             logging.error(e)
 
-            if utils.teiid_resource_exception(str(e)) and self.reconnect:
+            if utils.teiid_resource_exception.findall(str(e)) and self.reconnect:
                 if self.retry >= self.max_retry:
                     self.retry = 0
                     raise Exception('Max Retry Exception')
@@ -148,6 +175,8 @@ class OdbcSqlMagics(Magics):
                 self.retry += 1
                 self.odbc_reconnect()
                 return self.download(query)
+            else:
+                raise e
 
         return data
 
@@ -156,6 +185,7 @@ class OdbcSqlMagics(Magics):
         Store query result to dataframe
         :param query: SQL Query
         :return: pandas dataframe
+        :verbose: print process to stdout
         """
         print("Fetching result", flush=True) if verbose else None
 
@@ -234,10 +264,10 @@ class OdbcSqlMagics(Magics):
     @magic_arguments.magic_arguments()
     @magic_arguments.argument('-f', '--force', action='store_true', help="Force explorer to re-index schema")
     def explore_schema(self, arg):
-        '''
+        """
         Display schema explorer widgets
         :return:
-        '''
+        """
         args = magic_arguments.parse_argstring(self.explore_schema, arg)
 
         print('Fetching schema detail..')
