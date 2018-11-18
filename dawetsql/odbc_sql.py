@@ -109,7 +109,7 @@ class OdbcSqlMagics(Magics):
         else:
             connection_string = False
         
-        if len(self.__password) > 0:
+        if self.__password:
             password = str(self.chipper.decrypt(self.__password))
         else:
             password = None
