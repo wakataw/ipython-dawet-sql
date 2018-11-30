@@ -97,7 +97,7 @@ class OdbcSqlMagics(Magics):
             return
 
     @line_magic('dawetsqlreconnect')
-    def odbc_reconnect(self, args, cell=None):
+    def odbc_reconnect(self, args=None, cell=None):
         if not self.reconnect:
             logging.error("You did not use reconnect arguments, try re initialize dawetsql with -a/--reconnect argument")
             return
