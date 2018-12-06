@@ -220,7 +220,11 @@ class OdbcSqlMagics(Magics):
         header = True
 
         for chunk in result:
-            chunk.to_csv(filename, index=False, mode='a', header=header)
+            if header:
+                mode = 'w'
+            else:
+                mode = 'a'
+            chunk.to_csv(filename, index=False, mode=mode, header=header)
             total += len(chunk)
             self.print_process(total)
             header = False
