@@ -8,7 +8,7 @@ from pathlib import Path
 cleanser = re.compile(r'\s+|"|\'')
 alphanum = re.compile(r'[a-zA-Z0-9_]')
 alphanum_name = lambda x: ''.join(alphanum.findall(x))
-query_pattern = re.compile(r'(.*)LIMIT\s+(\d+)$', flags=re.DOTALL|re.I)
+query_pattern = re.compile(r'(.*)LIMIT\s+([-]?[0-9]+).*$', flags=re.DOTALL|re.I)
 widget_path = Path.home().joinpath('.dawetsql')
 teiid_resource_exception = re.compile(r'javax.resource.ResourceException', flags=re.DOTALL)
 
@@ -41,10 +41,16 @@ def validate_name(varname):
 def limit_query(query, limit):
     is_limited = query_pattern.findall(query)
 
+    print(is_limited)
+
     if is_limited:
         query = is_limited[0][0]
+        user_limit = int(is_limited[0][1])
 
-    return query.strip() + '\nLIMIT {}'.format(limit)
+        if 0 < user_limit < limit:
+            limit = user_limit
+
+    return query.strip() + ' LIMIT {}'.format(limit)
 
 
 def log_query(user, query):
