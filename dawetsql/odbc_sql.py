@@ -131,6 +131,7 @@ class OdbcSqlMagics(Magics):
         varname = args.ouput.strip()
 
         ok, valid_name = utils.validate_name(varname)
+        query = ' '.join(cell.strip().split())
 
         if not ok:
             logging.error("Cannot proceed with `{}` as output name".format(varname))
@@ -143,16 +144,16 @@ class OdbcSqlMagics(Magics):
 
         if valid_name != '_':
             if valid_name.lower().endswith('.csv'):
-                self.to_csv(cell, valid_name)
+                self.to_csv(query, valid_name)
                 return
             elif valid_name.lower().endswith('.pkl'):
-                self.to_pickle(cell, valid_name)
+                self.to_pickle(query, valid_name)
                 return
             else:
-                self.to_dataframe(cell, valid_name, download=True)
+                self.to_dataframe(query, valid_name, download=True)
                 return
 
-        return self.to_dataframe(utils.limit_query(cell, args.limit), valid_name)
+        return self.to_dataframe(utils.limit_query(query, args.limit), valid_name)
 
     def download(self, query):
         utils.log_query(self.__user, query)
