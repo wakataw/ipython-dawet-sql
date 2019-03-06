@@ -40,7 +40,7 @@ def limit_query(query, limit):
     is_limited = query_pattern.findall(query)
 
     if is_limited:
-        query = is_limited[0]
+        query = is_limited[0][0]
 
     return query.strip() + '\nLIMIT {}'.format(limit)
 
