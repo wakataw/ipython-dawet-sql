@@ -1,6 +1,6 @@
 from .odbc_sql import OdbcSqlMagics
 
-__version__ = '0.0.1.dev9'
+__version__ = '0.1b'
 __author__ = 'Agung Pratama'
 
 def load_ipython_extension(ipython):
