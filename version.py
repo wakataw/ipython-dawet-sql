@@ -1,5 +1,14 @@
 import re
-import sys
+
+
+def get_version(file, pattern):
+    with open(file, 'r') as f:
+        content = f.read()
+
+    version = pattern.findall(content)
+
+    print("File: {}, Old Version: {}".format(file, version[0]))
+
 
 def update_version(file, pattern, new_version):
     with open(file, 'r') as f:
@@ -13,8 +22,16 @@ def update_version(file, pattern, new_version):
 
     print("File: {}, Old Version: {}, New Version: {}".format(file, version[0], new_version))
 
+
 if __name__ == '__main__':
-    new_version = sys.argv[1]
     pattern = re.compile(r"version[\s+='_\"]+(.*)['\"]")
-    update_version('setup.py', pattern, new_version)
-    update_version('dawetsql/__init__.py', pattern, new_version)
+    file_ = ['setup.py', 'dawetsql/__init__.py']
+
+    for f in file_:
+        get_version(f, pattern)
+
+    print("\nUpdate Version")
+    new_version = input("New Version: ")
+
+    for f in file_:
+        update_version(f, pattern, new_version)
