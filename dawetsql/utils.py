@@ -4,7 +4,6 @@ import os
 
 from datetime import datetime
 from pathlib import Path
-from base64 import b64encode, b64decode
 
 cleanser = re.compile(r'\s+|"|\'')
 alphanum = re.compile(r'[a-zA-Z0-9_]')
@@ -13,8 +12,10 @@ query_pattern = re.compile(r'(.*)LIMIT\s+(\d+)$', flags=re.DOTALL|re.I)
 widget_path = Path.home().joinpath('.dawetsql')
 teiid_resource_exception = re.compile(r'javax.resource.ResourceException', flags=re.DOTALL)
 
+
 def check_path_sep(filename):
     return os.sep.join([alphanum_name(i) for i in filename.split(os.sep)])
+
 
 def validate_name(varname):
     valid_name = cleanser.sub('', varname)
@@ -36,6 +37,7 @@ def validate_name(varname):
         else:
             return False, varname
 
+
 def limit_query(query, limit):
     is_limited = query_pattern.findall(query)
 
@@ -43,6 +45,7 @@ def limit_query(query, limit):
         query = is_limited[0][0]
 
     return query.strip() + '\nLIMIT {}'.format(limit)
+
 
 def log_query(user, query):
     query = ' '.join([i for i in query.strip().split('\n') if i.strip() != ''])
