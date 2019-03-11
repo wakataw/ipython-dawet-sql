@@ -41,8 +41,6 @@ def validate_name(varname):
 def limit_query(query, limit):
     is_limited = query_pattern.findall(query)
 
-    print(is_limited)
-
     if is_limited:
         query = is_limited[0][0]
         user_limit = int(is_limited[0][1])
