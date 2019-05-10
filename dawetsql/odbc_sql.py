@@ -24,6 +24,7 @@ class OdbcSqlMagics(Magics):
         self.__password = None
         self.__dsn = None
         self.__conn_string = None
+        self.chipper = None
         super(OdbcSqlMagics, self).__init__(*args, **kwargs)
 
     def __connect(self, dsn, username, password, connection_string, verbose=True):
