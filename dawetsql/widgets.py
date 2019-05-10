@@ -12,8 +12,6 @@ class SchemaExplorer(object):
         Initialize SchemaExplorer
         :param dawetsql: OdbcSqlMagics object
         """
-        utils.widget_path.mkdir(exist_ok=True)
-
         self.__dawetsql = dawetsql
         self.__settings = WidgetSettings()
 

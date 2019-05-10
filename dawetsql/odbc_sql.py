@@ -23,6 +23,7 @@ class OdbcSqlMagics(Magics):
     __conn_string = None
 
     def __init__(self, *args, **kwargs):
+        utils.widget_path.mkdir(exist_ok=True)
         super(OdbcSqlMagics, self).__init__(*args, **kwargs)
 
     def __connect(self, dsn, username, password, connection_string, verbose=True):
