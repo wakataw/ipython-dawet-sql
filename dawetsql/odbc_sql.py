@@ -12,18 +12,18 @@ from cryptography.fernet import Fernet
 
 @magics_class
 class OdbcSqlMagics(Magics):
-    conn = None
-    chunksize = 500
-    reconnect = False
-    max_retry = 3
-    retry = 0
-    __user = None
-    __password = None
-    __dsn = None
-    __conn_string = None
 
     def __init__(self, *args, **kwargs):
         utils.widget_path.mkdir(exist_ok=True)
+        self.conn = None
+        self.chunksize = 500
+        self.reconnect = False
+        self.max_retry = 3
+        self.retry = 0
+        self.__user = None
+        self.__password = None
+        self.__dsn = None
+        self.__conn_string = None
         super(OdbcSqlMagics, self).__init__(*args, **kwargs)
 
     def __connect(self, dsn, username, password, connection_string, verbose=True):
